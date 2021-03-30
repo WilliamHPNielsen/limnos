@@ -2,3 +2,8 @@
 python_version = '3.9'
 
 [packages]
+matplotlib = "*"
+mypy = "*"
+limnos = {editable = true, path = "."}
+ipython = "*"
+jupyter = "*"
