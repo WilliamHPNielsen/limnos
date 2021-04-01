@@ -39,10 +39,10 @@ def _direction_from_points(first: Point, second: Point) -> Direction:
     dx = second[0] - first[0]
     dy = second[1] - first[1]
 
-    mapper = {(0, 1): Direction.NORTH,
-              (0, -1): Direction.SOUTH,
-              (1, 0): Direction.EAST,
-              (-1, 0): Direction.WEST}
+    mapper = {(0, 2): Direction.NORTH,
+              (0, -2): Direction.SOUTH,
+              (2, 0): Direction.EAST,
+              (-2, 0): Direction.WEST}
 
     if (dx, dy) not in mapper.keys():
         raise ValueError("Invalid non-neighbour points")
@@ -57,15 +57,15 @@ def _new_bender_points(starting_point: Point,
     Subroutine for bender transform
     """
     # chirality == right
-    delta_ps_right = {Direction.NORTH: [(1, 0), (1, 1)],
-                      Direction.SOUTH: [(-1, 0), (-1, -1)],
-                      Direction.EAST: [(0, -1), (1, -1)],
-                      Direction.WEST: [(0, 1), (-1, 1)]}
+    delta_ps_right = {Direction.NORTH: [(2, 0), (2, 2)],
+                      Direction.SOUTH: [(-2, 0), (-2, -2)],
+                      Direction.EAST: [(0, -2), (2, -2)],
+                      Direction.WEST: [(0, 2), (-2, 2)]}
     # chirality == left
-    delta_ps_left = {Direction.NORTH: [(-1, 0), (-1, 1)],
-                     Direction.SOUTH: [(1, 0), (1, -1)],
-                     Direction.EAST: [(0, 1), (1, 1)],
-                     Direction.WEST: [(0, -1), (-1, -1)]}
+    delta_ps_left = {Direction.NORTH: [(-2, 0), (-2, 2)],
+                     Direction.SOUTH: [(2, 0), (2, -2)],
+                     Direction.EAST: [(0, 2), (2, 2)],
+                     Direction.WEST: [(0, -2), (-2, -2)]}
 
     delta_ps = {Chirality.RIGHT: delta_ps_right,
                 Chirality.LEFT: delta_ps_left}[chirality][direction]
@@ -83,10 +83,10 @@ def _direction_from_next_neighbor_points(p1: Point,
     """
     dp = subtract_points(p2, p1)
 
-    mapper = {(1, 1): Direction.NORTHEAST,
-              (-1, 1): Direction.NORTHWEST,
-              (1, -1): Direction.SOUTHEAST,
-              (-1, -1): Direction.SOUTHWEST}
+    mapper = {(2, 2): Direction.NORTHEAST,
+              (-2, 2): Direction.NORTHWEST,
+              (2, -2): Direction.SOUTHEAST,
+              (-2, -2): Direction.SOUTHWEST}
 
     return mapper[dp]
 
@@ -138,14 +138,14 @@ def flipper(route: Route, start: int) -> Route:
 
     direction = _direction_from_next_neighbor_points(start_point, end_point)
 
-    flip_map = {(Direction.NORTHEAST, True): (1, -1),
-                (Direction.NORTHEAST, False): (-1, 1),
-                (Direction.SOUTHWEST, True): (-1, 1),
-                (Direction.SOUTHWEST, False): (1, -1),
-                (Direction.NORTHWEST, True): (-1, -1),
-                (Direction.NORTHWEST, False): (1, 1),
-                (Direction.SOUTHEAST, True): (1, 1),
-                (Direction.SOUTHEAST, False): (-1, -1)}
+    flip_map = {(Direction.NORTHEAST, True): (2, -2),
+                (Direction.NORTHEAST, False): (-2, 2),
+                (Direction.SOUTHWEST, True): (-2, 2),
+                (Direction.SOUTHWEST, False): (2, -2),
+                (Direction.NORTHWEST, True): (-2, -2),
+                (Direction.NORTHWEST, False): (2, 2),
+                (Direction.SOUTHEAST, True): (2, 2),
+                (Direction.SOUTHEAST, False): (-2, -2)}
 
     delta_coords = flip_map[(direction, same_x)]
 
@@ -178,10 +178,6 @@ def randomly_transform_once(route: Route) -> Route:
     """
     Apply one random transformation
     """
-    # partially apply chirality to bender and have four
-    # basic transforms?
-    # partial(bender, chirality=Chirality.RIGHT) etc.
-    # probability weights 1/6, 1/6, 1/3, 1/3
     transforms = {1: partial(bender, chirality=Chirality.RIGHT),
                   2: partial(bender, chirality=Chirality.LEFT),
                   3: flipper,
@@ -197,6 +193,7 @@ def randomly_transform_once(route: Route) -> Route:
         transform_to_try = transforms[randint(1, 6)]
         point_to_try = randint(0, len(route) - 1)
 
+        # TODO: get rid of this awkward try-except-continue hack
         try:
             new_route = transform_to_try(route, point_to_try)
         except (ValueError, IndexError):

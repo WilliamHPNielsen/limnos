@@ -32,13 +32,13 @@ def all_points_consecutive(route: Route) -> bool:
 
     dists = [dist_l1(*points) for points in zipper]
 
-    return bool(np.all(dists))
+    return bool(np.all(np.array(dists) == 2))
 
 
 def all_points_inside(route: Route) -> bool:
     """
     Checks whether all points are in the allowed region from
-    (0, 0) to the end corner
+    (1, 1) to the end corner
     """
     start_p = route[0]
     end_p = route[-1]
@@ -59,7 +59,7 @@ def subroute_flippable(subroute: Route) -> bool:
     p1 = subroute[0]
     p2 = subroute[2]
 
-    return abs(p1[0] - p2[0]) == abs(p1[1] - p2[1]) == 1
+    return abs(p1[0] - p2[0]) == abs(p1[1] - p2[1]) == 2
 
 
 def subroute_flattenable(subroute: Route) -> bool:
@@ -73,4 +73,4 @@ def subroute_flattenable(subroute: Route) -> bool:
     p1 = subroute[0]
     p2 = subroute[3]
 
-    return dist_l1(p1, p2) == 1
+    return dist_l1(p1, p2) == 2
