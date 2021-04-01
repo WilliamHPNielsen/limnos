@@ -11,3 +11,10 @@ def add_points(p1: Point, p2: Point) -> Point:
     Add two Points
     """
     return (p1[0] + p2[0], p1[1] + p2[1])
+
+
+def subtract_points(p1: Point, p2: Point) -> Point:
+    """
+    Subtract two points
+    """
+    return (p1[0] - p2[0], p1[1] - p2[1])
