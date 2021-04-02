@@ -1,9 +1,15 @@
 """
 Module that holds the fundamental types and basic functions
+
+Note that Routes contain Points of odd coordinates only, whereas
+Walls contain Points of even coordinates only
 """
 
 Point = tuple[int, int]
 Route = list[Point]
+Wall = tuple[Point, Point]
+Walls = list[Wall]
+Maze = tuple[Route, Walls]
 
 
 def add_points(p1: Point, p2: Point) -> Point:
