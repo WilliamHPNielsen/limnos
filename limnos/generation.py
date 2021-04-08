@@ -1,10 +1,15 @@
 """
 Module to generate mazes
 """
-from random import randint
+from random import randint, choice
+from typing import Optional, cast
+
+import numpy as np
 
 from .types import (Maze,
+                    Point,
                     Route,
+                    Trails,
                     Wall,
                     Walls,
                     add_points,
@@ -113,8 +118,8 @@ def add_random_wall_to_maze(maze: Maze) -> Maze:
 
     while not(found_good_wall):
 
-        x = 2 * randint(x0 / 2, x1 / 2)
-        y = 2 * randint(y0 / 2, y1 / 2)
+        x = 2 * randint(x0 // 2, x1 // 2)
+        y = 2 * randint(y0 // 2, y1 // 2)
 
         step = {1: (0, 2),
                 2: (2, 0),
@@ -136,3 +141,163 @@ def add_random_wall_to_maze(maze: Maze) -> Maze:
     new_walls.append(wall)
 
     return (route, new_walls)
+
+
+def _legal_sprout_point(route: Route, route_branch: Route, point: Point):
+    x, y = point
+    x_in_range = x >= 1 and x <= route[-1][0]
+    y_in_range = y >= 1 and y <= route[-1][1]
+    point_in_the_clear = (point not in route) and (point not in route_branch)
+
+    return x_in_range and y_in_range and point_in_the_clear
+
+
+def sprout_new_random_branch(mother_trails: Trails,
+                             sub_trails: Trails,
+                             start: int) -> Optional[Trails]:
+    """
+    Sprout a new random branch onto a sub trail
+
+    Args:
+        mother_trails: The main/full trails of the maze
+          (containing also the subtrail)
+        sub_trails: The trails where the branch should go
+        start: the sprout point of the branch on the main of the
+          sub_trails
+
+    Returns:
+        A new trails with the sprouted branch as main OR None if
+          no legal sprouting was possible
+    """
+
+    more_steps_possible = True
+    head = sub_trails.main[start]
+
+    branch_route: Route = [head]
+
+    north_step = (0, 2)
+    west_step = (-2, 0)
+    east_step = (2, 0)
+    south_step = (0, -2)
+
+    steps = np.array([north_step, east_step, south_step, west_step])
+
+    while more_steps_possible:
+        points = [add_points(head, step) for step in steps]
+        possible_steps = []
+        for point, step in zip(points, steps):
+            cond_1 = not(mother_trails.point_in_trails(point))
+            cond_2 = _legal_sprout_point(mother_trails.main, branch_route, point)
+            if cond_1 and cond_2:
+                possible_steps.append(step)
+
+        if len(possible_steps) > 0:
+            step = possible_steps[randint(0, len(possible_steps) - 1)]
+            head = add_points(head, step)
+            branch_route.append(head)
+        else:
+            more_steps_possible = False
+
+    if len(branch_route) == 1:
+        branch_route = []
+        new_trails = None
+    else:
+        new_trails = Trails(main=branch_route, branches=[])
+
+    return new_trails
+
+
+def sprout_new_random_route(route: Route, start: int) -> Route:
+    """
+    Sprout a new route that fits onto an existing route, i.e. only touches it
+    in one place, namely the starting point
+    """
+
+    more_steps_possible = True
+    head = route[start]
+
+    route_branch = [head]
+
+    north_step = (0, 2)
+    west_step = (-2, 0)
+    east_step = (2, 0)
+    south_step = (0, -2)
+
+    steps = np.array([north_step, east_step, south_step, west_step])
+
+    while more_steps_possible:
+
+        possible_steps = steps[[_legal_sprout_point(route, route_branch, add_points(head, step))
+                                for step in steps]]
+        if len(possible_steps) > 0:
+            step = possible_steps[randint(0, len(possible_steps) - 1)]
+            head = add_points(head, step)
+            route_branch.append(head)
+            print(route_branch)
+        else:
+            more_steps_possible = False
+
+    if len(route_branch) == 1:
+        route_branch = []
+
+    return route_branch
+
+
+def _close_trail_point(trails: Trails, free_point: Point) -> Point:
+    """
+    helper function to get a point in trails close to a free point
+    no guarentees that it's the nearest point
+
+    NB: a hit is guarenteed since the solution route goes from the
+    SW corner to the NE corner
+    """
+    if trails.point_in_trails(free_point):
+        return free_point
+
+    found_point = False
+    dist = 0
+    while not(found_point):
+        dist += 2
+        new_points = [add_points(free_point, (dist, 0)),
+                      add_points(free_point, (0, dist)),
+                      add_points(free_point, (-dist, 0)),
+                      add_points(free_point, (0, -dist))]
+        for new_point in new_points:
+            if trails.point_in_trails(new_point):
+                found_point = True
+                break
+
+    return new_point
+
+
+def trails_generator(N: int, M: int) -> Trails:
+    """
+    Full trail generation, generates N x M system
+    """
+
+    all_free_points: set[Point] = set(
+        [(2*n + 1, 2*m + 1) for n in range(N) for m in range(M)])
+
+    solution_route: Route = ([(1, 2*m + 1) for m in range(M)] +
+                             [(2*(n + 1) + 1, 2*(M - 1) + 1)
+                              for n in range(N - 1)])
+
+    # TODO: warp solution route
+
+    all_free_points.difference_update(set(solution_route))
+
+    trails = Trails(main=solution_route, branches=[])
+
+    while all_free_points != set():
+        free_point = choice(tuple(all_free_points))
+        trail_point = _close_trail_point(trails, free_point)
+        subtrail = trails.get_subtrail_by_point(trail_point)
+        start = subtrail.main.index(trail_point)
+        new_trail = sprout_new_random_branch(trails, subtrail, start)
+        new_trail = cast(Trails, new_trail)
+        subtrail.branches.append(new_trail)
+        all_free_points.difference_update(set(new_trail.main))
+
+        print(f"Remaining free points: {len(all_free_points)}")
+
+    return trails

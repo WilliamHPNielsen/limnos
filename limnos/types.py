@@ -4,12 +4,74 @@ Module that holds the fundamental types and basic functions
 Note that Routes contain Points of odd coordinates only, whereas
 Walls contain Points of even coordinates only
 """
+from typing import Union
+
 
 Point = tuple[int, int]
 Route = list[Point]
+Routes = list[Route]
 Wall = tuple[Point, Point]
 Walls = list[Wall]
 Maze = tuple[Route, Walls]
+
+
+class Trails():
+
+    def __init__(self, main: Route, branches: list['Trails']):
+
+        self.main: Route = main
+        self.branches: list['Trails'] = branches
+
+    def point_in_trails(self, point: Point) -> bool:
+        """
+        Determine if a point already exists in the trails
+        """
+        if point in self.main:
+            return True
+        for branch in self.branches:
+            if branch.point_in_trails(point):
+                return True
+        return False
+
+    def _all_routes(self, routes: Routes) -> Routes:
+        routes.append(self.main)
+        for branch in self.branches:
+            branch._all_routes(routes)
+        return routes
+
+    def all_routes(self) -> Routes:
+        return self._all_routes([])
+
+    def _get_subtrail_by_point(self,
+                               point: Point,
+                               lst: list['Trails']) -> list['Trails']:
+        if point in self.main:
+            lst.append(self)
+        else:
+            for branch in self.branches:
+                branch._get_subtrail_by_point(point, lst)
+
+        return lst
+
+    def get_subtrail_by_point(self, point: Point) -> 'Trails':
+        """
+        Get the subtrail that contains the point in its main trail
+        """
+        if not(self.point_in_trails(point)):
+            raise ValueError("Point not in trails")
+        else:
+            trails = self._get_subtrail_by_point(point, [])[0]
+
+        return trails
+
+    def __getitem__(self, key: list[int]) -> 'Trails':
+        if len(key) == 1:
+            return self.branches[key[0]]
+        else:
+            return self.branches[key[0]][key[1:]]
+
+    def __repr__(self) -> str:
+        return f"Trail({self.main}, {self.branches})"
 
 
 def add_points(p1: Point, p2: Point) -> Point:

@@ -4,6 +4,7 @@ Route transformations
 from enum import Enum, auto
 from functools import partial
 from random import randint
+from typing import Callable
 
 from .types import (Point,
                     Route,
@@ -178,6 +179,7 @@ def randomly_transform_once(route: Route) -> Route:
     """
     Apply one random transformation
     """
+    transforms: dict[int, Callable]
     transforms = {1: partial(bender, chirality=Chirality.RIGHT),
                   2: partial(bender, chirality=Chirality.LEFT),
                   3: flipper,
