@@ -209,3 +209,15 @@ def randomly_transform_once(route: Route) -> Route:
             found_valid_transform = True
 
     return new_route
+
+
+def randomly_transform_N_times(route: Route, N: int) -> Route:
+    """
+    Apply N random transformations to route
+    """
+    nr = randomly_transform_once(route)
+
+    for _ in range(N - 1):
+        nr = randomly_transform_once(nr)
+
+    return nr

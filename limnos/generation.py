@@ -14,7 +14,7 @@ from .types import (Maze,
                     Walls,
                     add_points,
                     subtract_points)
-from .transforms import Direction
+from .transforms import Direction, randomly_transform_N_times
 
 
 def _wall_intersects_route(route: Route, wall: Wall) -> bool:
@@ -282,7 +282,8 @@ def trails_generator(N: int, M: int) -> Trails:
                              [(2*(n + 1) + 1, 2*(M - 1) + 1)
                               for n in range(N - 1)])
 
-    # TODO: warp solution route
+    # TODO: What's an appropriate number of transformations?
+    solution_route = randomly_transform_N_times(solution_route, N * M)
 
     all_free_points.difference_update(set(solution_route))
 
@@ -298,6 +299,49 @@ def trails_generator(N: int, M: int) -> Trails:
         subtrail.branches.append(new_trail)
         all_free_points.difference_update(set(new_trail.main))
 
-        print(f"Remaining free points: {len(all_free_points)}")
-
     return trails
+
+
+def _all_potential_walls(trails: Trails) -> Walls:
+    """
+    Helper function to generate all possible walls in the rectangle
+    defined by the extremal points of the highest route in the trails
+    """
+    x0 = trails.main[0][0] - 1
+    x1 = trails.main[-1][0] + 1
+    y0 = trails.main[0][1] - 1
+    y1 = trails.main[-1][1] + 1
+
+    horiz_walls: Walls = [((x, y), (x + 2, y))
+                          for x in range(x0, x1, 2)
+                          for y in range(y0, y1 + 2, 2)]
+    vert_walls: Walls = [((x, y), (x, y + 2))
+                         for x in range(x0, x1 + 2, 2)
+                         for y in range(y0, y1, 2)]
+
+    return horiz_walls + vert_walls
+
+
+def walls_from_trails(trails: Trails) -> Walls:
+    """
+    Generate the walls that complement all the routes in a Trails collection.
+    All possible allowed walls are generated.
+    """
+
+    walls = _all_potential_walls(trails)
+    forbidden_walls = []
+
+    routes = trails.all_routes()
+
+    for wall in walls:
+        w1 = wall
+        w2 = (wall[1], wall[0])
+        for route in routes:
+            intersect1 = _wall_intersects_route(route, w1)
+            intersect2 = _wall_intersects_route(route, w2)
+            if intersect1 or intersect2:
+                forbidden_walls.append(wall)
+
+    legal_walls = [wall for wall in walls if wall not in forbidden_walls]
+
+    return legal_walls
