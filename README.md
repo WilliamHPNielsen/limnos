@@ -1,6 +1,6 @@
 # Limnos
 
-[A cool maze!](limnos_maze.png)
+![A cool maze!](limnos_maze.png)
 
 Welcome to `limnos`, a python library for generating mazes!
 
