@@ -47,7 +47,7 @@ trails = trails_generator(N=10, M=10)
 walls = walls_from_trails(trails)
 
 # Plot the maze. Showing the solution is optional
-plot_maze((trails.main), walls), show_route=True)
+plot_maze((trails.main, walls), show_route=True)
 ```
 
 The `plot_maze` command gives you a matplotlib figure which you can save as pdf and print out. 
