@@ -23,10 +23,10 @@ jobs:
              OS: ${{ matrix.os }}
              PYTHON: ${{ matrix.python-version }}
 
-    steps:
-    - uses: actions/checkout@v2
-    - name: Run Hello World
-      run: echo "Hellow World!"
+        steps:
+        - uses: actions/checkout@v2
+        - name: Run Hello World
+          run: echo "Hellow World!"
 
 
 
