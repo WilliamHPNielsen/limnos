@@ -33,6 +33,7 @@ jobs:
             python --version
             pip --version
             pipenv --version
- 
+        - name: Install Limnos with pipenv
+          run: pipenv install
 
 
