@@ -1,0 +1,35 @@
+name: Run mypy and pytest
+
+on:
+    push:
+        branches:
+            - 'main'
+
+        tags:
+            - 'v*'
+        pull_request:
+
+
+jobs:
+    build:
+
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                 os: [ubuntu-latest]
+                 python-version: [3.9]
+        env:
+             DISPLAY: '99.0'
+             OS: ${{ matrix.os }}
+             PYTHON: ${{ matrix.python-version }}
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run Hello World
+      run: echo "Hellow World!"
+
+
+
+
+
+
