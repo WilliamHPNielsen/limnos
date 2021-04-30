@@ -1,4 +1,4 @@
-name: Run mypy and pytest
+name: Run pytest
 
 on:
     push:
@@ -39,5 +39,8 @@ jobs:
             pipenv --version
         - name: Install Limnos with pipenv
           run: pipenv install
+        - name: Run pytest
+          run: |
+            pipenv run pytest
 
 
