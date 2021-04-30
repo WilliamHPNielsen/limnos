@@ -1,0 +1,46 @@
+name: Run pytest
+
+on:
+    push:
+        branches:
+            - 'main'
+
+    pull_request:
+         branches: [ main ]
+
+
+jobs:
+    build:
+
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                 os: [ubuntu-latest]
+                 python-version: [3.9]
+        env:
+             DISPLAY: '99.0'
+             OS: ${{ matrix.os }}
+             PYTHON: ${{ matrix.python-version }}
+
+        steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: ${{ matrix.python-version }}
+        - name: Run Hello World
+          run: echo "Hello World!"
+        - name: Install pipenv
+          run: |
+            pip install --upgrade pip 
+            pip install pipenv
+            python --version
+            pip --version
+            pipenv --version
+        - name: Install Limnos with pipenv
+          run: pipenv install
+        - name: Run pytest
+          run: |
+            pipenv run pytest
+
+
