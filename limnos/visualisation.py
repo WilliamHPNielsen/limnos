@@ -1,6 +1,8 @@
 """
 Visualization of routes
 """
+from typing import Generator
+
 from .types import Route, Routes, Maze, Trails
 
 import matplotlib.pyplot as plt
@@ -16,7 +18,7 @@ ROUTE_COLORS: list[ColorCode] = [
     "#a33800"]
 
 
-def color_picker(colors: list[ColorCode]) -> ColorCode:
+def color_picker(colors: list[ColorCode]) -> Generator[ColorCode, None, None]:
     """
     Generator that yields colors
     """
