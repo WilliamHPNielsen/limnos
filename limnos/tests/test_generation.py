@@ -2,6 +2,7 @@
 Test the generation functions
 """
 import pytest
+import random
 
 from limnos.generation import _wall_intersects_route, random_base_solution
 
@@ -17,11 +18,14 @@ intersects = [False, True, True]
 def test_intersection_check(wall, intersects):
     assert _wall_intersects_route(ROUTE, wall) == intersects
 
-def test_random_base_solution:
-    # Test should check the following:
-    # A) That upper right corner is always the last step (and thus also that
-    # it is actually there)
-    # B) That there are no points outside of the maze
-    # C) It might be a good idea that this test constists of creating several
-    # actual mazes and then run the tests on these.
-    pass
+def test_random_base_solution():
+
+    test_dimensions = list(range(0, 6))
+
+    for test in range(10):
+        N = random.choice(test_dimensions)
+        M = random.choice(test_dimensions)
+        this_test = random_base_solution(N, M)
+        assert len(this_test) == N + M
+        assert this_test[-1] == (N * 2 - 1, M * 2 -1)
+        # assert that this_test also passes _wall_intersects_route
