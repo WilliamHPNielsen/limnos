@@ -154,14 +154,26 @@ def random_base_solution(N:int, M: int):
     # Step 1: Define steps to the right and up as moving 2, 0 steps and 0, 2
     # steps respectively.
 
-    # Step 2: Create a variable, an empty list called random_base_solution
-    # that will hold just that.
+    possible_steps = [(2, 0), (0, 2)]
+
+    # Step 2: Create a variable, a list called random_base_solution
+    # that will hold just that, with the starting point in (1, 1).
+
+    random_base_solution = [(1, 1)]
 
     # Step 3: Randomly choose either a step to the right or up. If the trail
     # hits a wall, it should go directly (e.g. to the right or up) to upper-
     # right corner.
 
     # Step 4: Return the variable random_base_solution.
+
+    return random_base_solution
+
+    # Remember to write tests along the way!
+    # solution_route: Route = ([(1, 2 * m + 1) for m in range(M)] +
+    #                     [(2 * (n + 1) + 1, 2 * (M - 1) + 1)
+    #                      for n in range(N - 1)])
+
 
 def _legal_sprout_point(route: Route, route_branch: Route, point: Point):
     x, y = point
