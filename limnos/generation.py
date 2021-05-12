@@ -165,6 +165,16 @@ def random_base_solution(N:int, M: int):
     # hits a wall, it should go directly (e.g. to the right or up) to upper-
     # right corner.
 
+    # Steps in step 3:
+    # while upper-right corner not in random_base_solution:
+        # this_step = random.choice(possible_steps)
+        # if last step in random_base_solution + this_step = hitting the top/
+        # right part of the maze:
+            # Do the step and continue straight to upper-right corner,
+            # appending random_base_solution along the way
+        # else:
+            # random_base_solution.append(this_step)
+
     # Step 4: Return the variable random_base_solution.
 
     return random_base_solution
