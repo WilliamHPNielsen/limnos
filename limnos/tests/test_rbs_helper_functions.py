@@ -2,7 +2,7 @@
 Tests for helper functions for random_base_solution().
 '''
 
-from limnos.generation import _topmost, _rightmost
+from limnos.generation import _topmost, _rightmost, _go_right, _go_up, _random_step
 
 def test_topmost():
     assert _topmost((5, 7), 4) == True
@@ -15,3 +15,17 @@ def test_rightmost():
     assert _rightmost((5, 11), 3) == True
     assert _rightmost((7, 11), 8) == False
     assert _rightmost((9, 47), 24) == False
+
+def test_go_right():
+    assert _go_right((7, 3)) == (9, 3)
+    assert _go_right((15, 15)) == (17, 15)
+
+def test_go_up():
+    assert _go_up((7, 3)) == (7, 5)
+    assert _go_up((15, 15)) == (15, 17)
+
+def test_random_step():
+    # Test that the step is either up or right compared to last_point
+    assert _random_step((7,3)) == (25, 25)
+    # assert _random_step((15, 15))
+
