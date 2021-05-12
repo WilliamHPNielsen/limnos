@@ -1,6 +1,7 @@
 """
 Module to generate mazes
 """
+import random
 from random import randint, choice
 from typing import Optional, cast
 
@@ -166,14 +167,24 @@ def random_base_solution(N:int, M: int):
     # right corner.
 
     # Steps in step 3:
-    # while upper-right corner not in random_base_solution:
-        # this_step = random.choice(possible_steps)
-        # if last step in random_base_solution + this_step = hitting the top/
-        # right part of the maze:
-            # Do the step and continue straight to upper-right corner,
-            # appending random_base_solution along the way
-        # else:
-            # random_base_solution.append(this_step)
+    # for step in range(N+M-1):
+    for step in range(N+M-1):
+        if random_base_solution[-1][0] == N - 1:
+            this_step = (N - 1, random_base_solution[-1][1] + 2)
+            random_base_solution.append(this_step)
+        elif random_base_solution[-1][1] == M - 1:
+            this_step = (random_base_solution[-1][0] + 2, M - 1, )
+            random_base_solution.append(this_step)
+        else:
+            this_step = random.choice(possible_steps)
+            next_point = (random_base_solution[-1][0] + this_step[0],
+                          random_base_solution[-1][0] + this_step[1])
+            random_base_solution.append(next_point)
+        # If last step in random_base_solution is at top or right part of the
+        # maze:
+            # Move to the right or up respectively
+        # Else:
+            # random_base_solution.append(random.choice(possible_steps))
 
     # Step 4: Return the variable random_base_solution.
 
