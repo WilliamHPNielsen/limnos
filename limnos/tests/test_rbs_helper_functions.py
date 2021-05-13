@@ -26,6 +26,8 @@ def test_go_up():
 
 def test_random_step():
     # Test that the step is either up or right compared to last_point
-    assert _random_step((7,3)) == (25, 25)
-    # assert _random_step((15, 15))
+    test_step = _random_step((7,3))
+    assert test_step == (9, 3) or test_step == (7, 5)
+    test_step = _random_step((15, 15))
+    assert test_step == (17, 15) or test_step == (15, 17)
 
