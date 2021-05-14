@@ -3,7 +3,7 @@ Test the generation functions
 """
 import pytest
 
-from limnos.generation import _wall_intersects_route
+from limnos.generation.nielsen import _wall_intersects_route
 
 
 ROUTE = [(1, 1), (1, 3), (3, 3), (5, 3), (5, 5)]

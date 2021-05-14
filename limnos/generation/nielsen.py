@@ -6,15 +6,15 @@ from typing import Optional, cast
 
 import numpy as np
 
-from .types import (Maze,
-                    Point,
-                    Route,
-                    Trails,
-                    Wall,
-                    Walls,
-                    add_points,
-                    subtract_points)
-from .transforms import Direction, randomly_transform_N_times
+from limnos.types import (Maze,
+                          Point,
+                          Route,
+                          Trails,
+                          Wall,
+                          Walls,
+                          add_points,
+                          subtract_points)
+from limnos.transforms import Direction, randomly_transform_N_times
 
 
 def _wall_intersects_route(route: Route, wall: Wall) -> bool:

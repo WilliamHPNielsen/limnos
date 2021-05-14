@@ -36,7 +36,7 @@ Being a library, `limnos` must be imported and used in a python session (there a
 
 ```python
 
-from limnos.generation import trails_generator, walls_from_trails
+from limnos.generation.nielsen import trails_generator, walls_from_trails
 from limnos.visualisation import plot_maze
 
 # Generate the trails of an NxM maze
