@@ -186,12 +186,12 @@ def random_base_solution(N:int, M: int):
 
     random_base_solution = [(1, 1)]
 
-    for step in range(N+M-1):
+    for step in range(N+M-2):
         last_point = random_base_solution[-1]
         if _topmost(last_point, M):
             next_point = _go_right(last_point)
             random_base_solution.append(next_point)
-        if _rightmost(last_point, N):
+        elif _rightmost(last_point, N):
             next_point = _go_up(last_point)
             random_base_solution.append(next_point)
         else:
@@ -336,9 +336,7 @@ def trails_generator(N: int, M: int) -> Trails:
     all_free_points: set[Point] = set(
         [(2*n + 1, 2*m + 1) for n in range(N) for m in range(M)])
 
-    solution_route: Route = ([(1, 2*m + 1) for m in range(M)] +
-                             [(2*(n + 1) + 1, 2*(M - 1) + 1)
-                              for n in range(N - 1)])
+    solution_route: Route = random_base_solution(N, M)
 
     # TODO: What's an appropriate number of transformations?
     solution_route = randomly_transform_N_times(solution_route, N * M)
