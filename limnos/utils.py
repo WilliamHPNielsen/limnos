@@ -1,7 +1,7 @@
 from limnos.types import Trails, Walls, Route, Wall, subtract_points, add_points
 
 
-def _wall_intersects_route(route: Route, wall: Wall) -> bool:
+def wall_intersects_route(route: Route, wall: Wall) -> bool:
     """
     Check whether a wall intersects a route. If it does intersect, return
     True.
@@ -66,8 +66,8 @@ def walls_from_trails(trails: Trails) -> Walls:
         w1 = wall
         w2 = (wall[1], wall[0])
         for route in routes:
-            intersect1 = _wall_intersects_route(route, w1)
-            intersect2 = _wall_intersects_route(route, w2)
+            intersect1 = wall_intersects_route(route, w1)
+            intersect2 = wall_intersects_route(route, w2)
             if intersect1 or intersect2:
                 forbidden_walls.append(wall)
 

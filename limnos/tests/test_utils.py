@@ -3,7 +3,7 @@ Test the generation functions
 """
 import pytest
 
-from limnos.utils import _wall_intersects_route
+from limnos.utils import wall_intersects_route
 
 ROUTE = [(1, 1), (1, 3), (3, 3), (5, 3), (5, 5)]
 walls = [((2, 2), (4, 2)),
@@ -14,4 +14,4 @@ intersects = [False, True, True]
 
 @pytest.mark.parametrize("wall, intersects", list(zip(walls, intersects)))
 def test_intersection_check(wall, intersects):
-    assert _wall_intersects_route(ROUTE, wall) == intersects
+    assert wall_intersects_route(ROUTE, wall) == intersects

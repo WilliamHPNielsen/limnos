@@ -14,7 +14,7 @@ from limnos.types import (Maze,
                           Walls,
                           add_points)
 from limnos.transforms import randomly_transform_N_times
-from limnos.utils import _wall_intersects_route
+from limnos.utils import wall_intersects_route
 
 
 def _wall_forms_loop(new_wall: Wall, old_walls: Walls) -> bool:
@@ -100,7 +100,7 @@ def add_random_wall_to_maze(maze: Maze) -> Maze:
 
         reasons_to_retry = [wall in walls,
                             _wall_forms_loop(wall, walls),
-                            _wall_intersects_route(route, wall)]
+                            wall_intersects_route(route, wall)]
 
         if any(reasons_to_retry):
             pass
