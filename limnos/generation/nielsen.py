@@ -1,5 +1,5 @@
 """
-Module to generate mazes
+Module to generate mazes by Nielsen's algorithm
 """
 from random import randint, choice
 from typing import Optional, cast
