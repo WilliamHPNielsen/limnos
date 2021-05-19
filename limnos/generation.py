@@ -193,6 +193,9 @@ def sprout_new_random_branch(mother_trails: Trails,
 
         if len(possible_steps) > 0:
             step = possible_steps[randint(0, len(possible_steps) - 1)]
+            # now cast numpy ints to standard ints since some modules
+            # (notably json) care about the int type
+            step = (int(step[0]), int(step[1]))
             head = add_points(head, step)
             branch_route.append(head)
         else:
