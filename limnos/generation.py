@@ -144,7 +144,7 @@ def add_random_wall_to_maze(maze: Maze) -> Maze:
     return (route, new_walls)
 
 
-def _topmost(last_point, M):
+def _topmost(last_point: Point, M: int) -> bool:
     topmost = 2 * M - 1
     if last_point[1] == topmost:
         return True
@@ -152,7 +152,7 @@ def _topmost(last_point, M):
         return False
 
 
-def _rightmost(last_point, N):
+def _rightmost(last_point: Point, N: int) -> bool:
     rightmost = 2 * N - 1
     if last_point[0] == rightmost:
         return True
@@ -160,28 +160,28 @@ def _rightmost(last_point, N):
         return False
 
 
-def _go_right(last_point):
+def _go_right(last_point: Point) -> Point:
     new_point = list(last_point)
     new_point[0] += 2
     return tuple(new_point)
 
 
-def _go_up(last_point):
+def _go_up(last_point: Point) -> Point:
     new_point = list(last_point)
     new_point[1] += 2
     return tuple(new_point)
 
 
-def _random_step(last_point):
+def _random_step(last_point: Point) -> Point:
     new_point = list(last_point)
     direction = random.choice([0, 1])
     new_point[direction] += 2
     return tuple(new_point)
 
 
-def random_base_solution(N:int, M: int):
+def random_base_solution(N:int, M: int) -> Route:
     """
-    Generates the basic solution trail (before it is transformed).
+    Generates the basic solution route (before it is transformed).
     """
 
     random_base_solution = [(1, 1)]
@@ -190,13 +190,11 @@ def random_base_solution(N:int, M: int):
         last_point = random_base_solution[-1]
         if _topmost(last_point, M):
             next_point = _go_right(last_point)
-            random_base_solution.append(next_point)
         elif _rightmost(last_point, N):
             next_point = _go_up(last_point)
-            random_base_solution.append(next_point)
         else:
             next_point = _random_step(last_point)
-            random_base_solution.append(next_point)
+        random_base_solution.append(next_point)
 
     return random_base_solution
 
