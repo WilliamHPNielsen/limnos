@@ -4,9 +4,6 @@ Algorithm described eg by Wikipedia: https://en.wikipedia.org/wiki/Maze_generati
     and visualised here: https://bl.ocks.org/mbostock/11357811
 """
 from random import randint, choice
-from typing import Optional, cast
-
-import numpy as np
 
 from limnos.types import (Point,
                           Route,
@@ -15,6 +12,8 @@ from limnos.types import (Point,
 
 
 def _random_direction(n: int, m: int, p: Point) -> Point:
+    """Go in a random, allowed direction
+    TODO: This seems like a generic function that could be moved somewhere else"""
     if p[0] == 1:
         if p[1] == 1:
             r = choice([(2, 0), (0, 2)])
@@ -44,13 +43,11 @@ def _loop_erased_random_walk(n: int, m: int, start: Point, end: Trails) -> Route
     """
     Walks from `start` and ends in any point in `end`.
     Erases any loop formed with self by backtracking.
-    The last point in this route is also in trails, so only use
-    answer[:-1] if you are updating an existing trail
     """
     route: Route = [start]
     while not end.point_in_trails(route[-1]):
         next_point = _random_direction(n, m, route[-1])
-        if len(route) > 1 and next_point == route[-2]:  # what a half-assed solution ...
+        if len(route) > 1 and next_point == route[-2]:  # TODO: what a half-assed solution ...
             continue
         elif next_point in route:
             while route[-1] != next_point:
