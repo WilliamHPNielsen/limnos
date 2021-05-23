@@ -6,6 +6,7 @@ Walls contain Points of even coordinates only
 """
 from typing import Union
 
+import numpy as np
 
 Point = tuple[int, int]
 Route = list[Point]
@@ -20,7 +21,26 @@ class Trails():
     def __init__(self, main: Route, branches: list['Trails']):
 
         self.main: Route = main
-        self.branches: list['Trails'] = branches
+        self._branches: list['Trails'] = branches
+        self._impose_canonical_branch_order()
+
+    @property
+    def branches(self) -> list['Trails']:
+        return self._branches
+
+    def add_branch(self, branch: 'Trails'):
+        self._branches.append(branch)
+        self._impose_canonical_branch_order()
+
+    def _impose_canonical_branch_order(self):
+        """
+        The canonical branch order: branches are ordered by their appearance
+        as the main route is traversed from start to end
+        """
+        if len(self.branches) == 0:
+            return
+        inds = [self.main.index(branch.main[0]) for branch in self.branches]
+        self._branches = [self.branches[i] for i in np.argsort(inds)]
 
     def point_in_trails(self, point: Point) -> bool:
         """
