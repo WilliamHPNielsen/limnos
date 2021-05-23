@@ -21,6 +21,43 @@ TRAILS_SERIAL_VERSION = 1
 
 class Trails():
 
+    @classmethod
+    def deserialize(cls, ser: dict) -> 'Trails':
+        """
+        Deserialize a serialized Trails dictionary into a Trails object
+        """
+        assert ser['version'] == TRAILS_SERIAL_VERSION
+
+        trails = Trails(main=ser['main'], branches=[])
+
+        def _deserializer(ser: dict, trails: Trails) -> 'Trails':
+
+            for branch in ser['branches']:
+                new_trails = Trails(main=branch['main'], branches=[])
+                trails.branches.append(_deserializer(branch, new_trails))
+            return trails
+
+        return _deserializer(ser, trails)
+
+    @classmethod
+    def deserialize_from_string(cls, ser: str) -> 'Trails':
+        """
+        Deserialize a serialized Trails string into a Trails string
+        """
+
+        deser = json.loads(ser)
+        # the raw deserialization contains lists of lists of ints and not
+        # lists of tuples of ints, so we convert lists to tuples
+
+        def _lists_to_tuples(mydict):
+            mydict['main'] = [(p[0], p[1]) for p in mydict['main']]
+            for branch in mydict['branches']:
+                _lists_to_tuples(branch)
+
+        _lists_to_tuples(deser)
+
+        return cls.deserialize(deser)
+
     def __init__(self, main: Route, branches: list['Trails']):
 
         self.main: Route = main
@@ -101,7 +138,6 @@ class Trails():
 
     def __repr__(self) -> str:
         return f"Trail({self.main}, {self.branches})"
-
 
 
 def add_points(p1: Point, p2: Point) -> Point:
