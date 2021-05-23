@@ -5,6 +5,7 @@ Note that Routes contain Points of odd coordinates only, whereas
 Walls contain Points of even coordinates only
 """
 from typing import Union
+import json
 
 
 Point = tuple[int, int]
@@ -13,6 +14,9 @@ Routes = list[Route]
 Wall = tuple[Point, Point]
 Walls = list[Wall]
 Maze = tuple[Route, Walls]
+
+
+TRAILS_SERIAL_VERSION = 1
 
 
 class Trails():
@@ -64,6 +68,31 @@ class Trails():
 
         return trails
 
+    def serialize(self) -> dict:
+        """
+        Return a nested dict of dicts of routes containing
+        this Trails object
+        """
+        output = dict()
+
+        def _serializer(trails: Trails, output: dict) -> dict:
+            output['main'] = trails.main
+            output['branches'] = [_serializer(branch, dict())
+                                  for branch in trails.branches]
+
+            return output
+
+        output['version'] = TRAILS_SERIAL_VERSION
+        output = _serializer(self, output)
+
+        return output
+
+    def serialize_to_string(self) -> str:
+        """
+        Return a string representing this Trails object
+        """
+        return json.dumps(self.serialize())
+
     def __getitem__(self, key: list[int]) -> 'Trails':
         if len(key) == 1:
             return self.branches[key[0]]
@@ -72,6 +101,7 @@ class Trails():
 
     def __repr__(self) -> str:
         return f"Trail({self.main}, {self.branches})"
+
 
 
 def add_points(p1: Point, p2: Point) -> Point:
