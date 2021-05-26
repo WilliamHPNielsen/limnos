@@ -1,2 +1,14 @@
 # emacs
 *~
+
+# pycharm
+.idea/
+
+
+.ipynb_checkpoints/
+limnos.egg-info/
+limnos/.ipynb_checkpoints/
+limnos/Untitled.ipynb
+limnos/__pycache__/
+limnos/tests/__pycache__/
+.hypothesis/

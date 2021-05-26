@@ -1,6 +1,7 @@
 """
 Module to generate mazes
 """
+import random
 from random import randint, choice
 from typing import Optional, cast
 
@@ -143,6 +144,55 @@ def add_random_wall_to_maze(maze: Maze) -> Maze:
     return (route, new_walls)
 
 
+def _topmost(last_point: Point, M: int) -> bool:
+    topmost = 2 * M - 1
+    if last_point[1] == topmost:
+        return True
+    else:
+        return False
+
+
+def _rightmost(last_point: Point, N: int) -> bool:
+    rightmost = 2 * N - 1
+    if last_point[0] == rightmost:
+        return True
+    else:
+        return False
+
+
+def _go_right(last_point: Point) -> Point:
+    return (last_point[0] + 2, last_point[1])
+
+
+def _go_up(last_point: Point) -> Point:
+    return (last_point[0], last_point[1] + 2)
+
+
+def _random_step(last_point: Point) -> Point:
+    new_point = random.choice([(last_point[0] + 2, last_point[1]), (last_point[0], last_point[1] + 2)])
+    return new_point
+
+
+def random_base_solution(N:int, M: int) -> Route:
+    """
+    Generates the basic solution route (before it is transformed).
+    """
+
+    random_base_solution = [(1, 1)]
+
+    for step in range(N+M-2):
+        last_point = random_base_solution[-1]
+        if _topmost(last_point, M):
+            next_point = _go_right(last_point)
+        elif _rightmost(last_point, N):
+            next_point = _go_up(last_point)
+        else:
+            next_point = _random_step(last_point)
+        random_base_solution.append(next_point)
+
+    return random_base_solution
+
+
 def _legal_sprout_point(route: Route, route_branch: Route, point: Point):
     x, y = point
     x_in_range = x >= 1 and x <= route[-1][0]
@@ -278,9 +328,7 @@ def trails_generator(N: int, M: int) -> Trails:
     all_free_points: set[Point] = set(
         [(2*n + 1, 2*m + 1) for n in range(N) for m in range(M)])
 
-    solution_route: Route = ([(1, 2*m + 1) for m in range(M)] +
-                             [(2*(n + 1) + 1, 2*(M - 1) + 1)
-                              for n in range(N - 1)])
+    solution_route: Route = random_base_solution(N, M)
 
     # TODO: What's an appropriate number of transformations?
     solution_route = randomly_transform_N_times(solution_route, N * M)
