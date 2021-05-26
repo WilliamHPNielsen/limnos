@@ -161,22 +161,16 @@ def _rightmost(last_point: Point, N: int) -> bool:
 
 
 def _go_right(last_point: Point) -> Point:
-    new_point = list(last_point)
-    new_point[0] += 2
-    return tuple(new_point)
+    return (last_point[0] + 2, last_point[1])
 
 
 def _go_up(last_point: Point) -> Point:
-    new_point = list(last_point)
-    new_point[1] += 2
-    return tuple(new_point)
+    return (last_point[0], last_point[1] + 2)
 
 
 def _random_step(last_point: Point) -> Point:
-    new_point = list(last_point)
-    direction = random.choice([0, 1])
-    new_point[direction] += 2
-    return tuple(new_point)
+    new_point = random.choice([(last_point[0] + 2, last_point[1]), (last_point[0], last_point[1] + 2)])
+    return new_point
 
 
 def random_base_solution(N:int, M: int) -> Route:
