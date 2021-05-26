@@ -8,3 +8,4 @@ limnos = {editable = true, path = "."}
 ipython = "*"
 jupyter = "*"
 pytest = "*"
+hypothesis = "*"

@@ -4,8 +4,6 @@
 # pycharm
 .idea/
 
-# File for playing around
-playing_around.ipynb
 
 .ipynb_checkpoints/
 limnos.egg-info/
@@ -13,4 +11,4 @@ limnos/.ipynb_checkpoints/
 limnos/Untitled.ipynb
 limnos/__pycache__/
 limnos/tests/__pycache__/
-
+.hypothesis/
