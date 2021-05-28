@@ -1,2 +1,10 @@
 # emacs
 *~
+
+# pycharm
+.idea/
+
+.ipynb_checkpoints/
+limnos.egg-info/
+__pycache__/
+
