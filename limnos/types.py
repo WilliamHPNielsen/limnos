@@ -169,6 +169,23 @@ class Trails():
     def __repr__(self) -> str:
         return f"Trail({self.main}, {self.branches})"
 
+    def __eq__(self, other):
+
+        def _any_difference(self, other):
+            if not isinstance(other, Trails):
+                return True
+            if self.main != other.main:
+                return True
+            if len(self.branches) != len(other.branches):
+                return True
+            for b1, b2 in zip(self.branches, other.branches):
+                _any_difference(b1, b2)
+
+        if _any_difference(self, other):
+            return False
+        else:
+            return True
+
 
 def add_points(p1: Point, p2: Point) -> Point:
     """
