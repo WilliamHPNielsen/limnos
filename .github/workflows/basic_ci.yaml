@@ -44,6 +44,6 @@ jobs:
             pipenv run pytest
         - name: Run mypy
           run: |
-            pipenv run mypy
+            pipenv run mypy limnos
 
 
