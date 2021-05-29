@@ -9,7 +9,9 @@ from typing import Callable
 from .types import (Point,
                     Route,
                     add_points,
-                    subtract_points)
+                    subtract_points,
+                    direction_from_points,
+                    Direction)
 from .validation import (all_points_consecutive,
                          all_points_inside,
                          all_points_unique,
@@ -20,35 +22,6 @@ from .validation import (all_points_consecutive,
 class Chirality(Enum):
     LEFT = auto()
     RIGHT = auto()
-
-
-class Direction(Enum):
-    NORTH = auto()
-    SOUTH = auto()
-    EAST = auto()
-    WEST = auto()
-    NORTHEAST = auto()
-    NORTHWEST = auto()
-    SOUTHEAST = auto()
-    SOUTHWEST = auto()
-
-
-def _direction_from_points(first: Point, second: Point) -> Direction:
-    """
-    Helper to get direction from points
-    """
-    dx = second[0] - first[0]
-    dy = second[1] - first[1]
-
-    mapper = {(0, 2): Direction.NORTH,
-              (0, -2): Direction.SOUTH,
-              (2, 0): Direction.EAST,
-              (-2, 0): Direction.WEST}
-
-    if (dx, dy) not in mapper.keys():
-        raise ValueError("Invalid non-neighbour points")
-
-    return mapper[(dx, dy)]
 
 
 def _new_bender_points(starting_point: Point,
@@ -109,7 +82,7 @@ def bender(route: Route, start: int, chirality: Chirality) -> Route:
     p1 = route[start]
     p2 = route[start + 1]
 
-    direction = _direction_from_points(p1, p2)
+    direction = direction_from_points(p1, p2)
 
     new_points = _new_bender_points(p1, direction, chirality)
 

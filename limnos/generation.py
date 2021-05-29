@@ -299,7 +299,7 @@ def trails_generator(N: int, M: int) -> Trails:
         start = subtrail.main.index(trail_point)
         new_trail = sprout_new_random_branch(trails, subtrail, start)
         new_trail = cast(Trails, new_trail)
-        subtrail.branches.append(new_trail)
+        subtrail.add_branch(new_trail)
         all_free_points.difference_update(set(new_trail.main))
 
     return trails
