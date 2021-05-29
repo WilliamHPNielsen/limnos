@@ -5,6 +5,7 @@ Note that Routes contain Points of odd coordinates only, whereas
 Walls contain Points of even coordinates only
 """
 from typing import Union
+from enum import Enum, auto
 
 import numpy as np
 
@@ -16,13 +17,48 @@ Walls = list[Wall]
 Maze = tuple[Route, Walls]
 
 
+class Direction(Enum):
+    NORTH = auto()
+    SOUTH = auto()
+    EAST = auto()
+    WEST = auto()
+    NORTHEAST = auto()
+    NORTHWEST = auto()
+    SOUTHEAST = auto()
+    SOUTHWEST = auto()
+
+
+NORTH = Direction.NORTH
+SOUTH = Direction.SOUTH
+EAST = Direction.EAST
+WEST = Direction.WEST
+
+
+def direction_from_points(first: Point, second: Point) -> Direction:
+    """
+    Helper to get direction from points
+    """
+    dx = second[0] - first[0]
+    dy = second[1] - first[1]
+
+    mapper = {(0, 2): Direction.NORTH,
+              (0, -2): Direction.SOUTH,
+              (2, 0): Direction.EAST,
+              (-2, 0): Direction.WEST}
+
+    if (dx, dy) not in mapper.keys():
+        raise ValueError("Invalid non-neighbour points")
+
+    return mapper[(dx, dy)]
+
+
 class Trails():
 
     def __init__(self, main: Route, branches: list['Trails']):
 
         self.main: Route = main
         self._branches: list['Trails'] = branches
-        self._impose_canonical_branch_order()
+        self._impose_canonical_branch_order_2()
 
     @property
     def branches(self) -> list['Trails']:
