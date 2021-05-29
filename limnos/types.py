@@ -7,8 +7,6 @@ Walls contain Points of even coordinates only
 from typing import Union
 from enum import Enum, auto
 
-import numpy as np
-
 Point = tuple[int, int]
 Route = list[Point]
 Routes = list[Route]
@@ -57,8 +55,9 @@ class Trails():
     def __init__(self, main: Route, branches: list['Trails']):
 
         self.main: Route = main
-        self._branches: list['Trails'] = branches
-        self._impose_canonical_branch_order_2()
+        self._branches: list['Trails'] = []
+        for branch in branches:
+            self.add_branch(branch)
 
     @property
     def branches(self) -> list['Trails']:
@@ -69,14 +68,55 @@ class Trails():
         self._impose_canonical_branch_order()
 
     def _impose_canonical_branch_order(self):
-        """
-        The canonical branch order: branches are ordered by their appearance
-        as the main route is traversed from start to end
-        """
-        if len(self.branches) == 0:
-            return
-        inds = [self.main.index(branch.main[0]) for branch in self.branches]
-        self._branches = [self.branches[i] for i in np.argsort(inds)]
+
+        def _assign_branch_number(branch: 'Trails') -> int:
+
+            main_index = self.main.index(branch.main[0])
+
+            # special cases of the end and start points
+            # where no 4-way cross can occur
+            if main_index == len(self.main) - 1 or main_index == 0:
+                return main_index * 2
+
+            main_dir_pre = direction_from_points(self.main[main_index],
+                                                 self.main[main_index - 1])
+            main_dir_post = direction_from_points(self.main[main_index + 1],
+                                                  self.main[main_index])
+            branch_direction = direction_from_points(branch.main[1],
+                                                     branch.main[0])
+            does_branch_go_left = {
+                (NORTH, NORTH, EAST): False,
+                (NORTH, NORTH, WEST): True,
+                (NORTH, EAST, WEST): True,
+                (NORTH, EAST, NORTH): False,
+                (NORTH, WEST, EAST): False,
+                (NORTH, WEST, NORTH): True,
+                (SOUTH, SOUTH, EAST): True,
+                (SOUTH, SOUTH, WEST): False,
+                (SOUTH, EAST, SOUTH): True,
+                (SOUTH, EAST, WEST): False,
+                (SOUTH, WEST, SOUTH): False,
+                (SOUTH, WEST, EAST): True,
+                (EAST, EAST, NORTH): True,
+                (EAST, EAST, SOUTH): False,
+                (EAST, NORTH, SOUTH): False,
+                (EAST, NORTH, EAST): True,
+                (EAST, SOUTH, NORTH): True,
+                (EAST, SOUTH, EAST): False,
+                (WEST, WEST, NORTH): False,
+                (WEST, WEST, SOUTH): True,
+                (WEST, NORTH, SOUTH): True,
+                (WEST, NORTH, WEST): False,
+                (WEST, SOUTH, WEST): True,
+                (WEST, SOUTH, NORTH): False}
+            branch_goes_left = does_branch_go_left[(main_dir_pre,
+                                                    main_dir_post,
+                                                    branch_direction)]
+            branch_number = main_index * 2 - (1 if branch_goes_left else 0)
+
+            return branch_number
+
+        self._branches = sorted(self._branches, key=_assign_branch_number)
 
     def point_in_trails(self, point: Point) -> bool:
         """
