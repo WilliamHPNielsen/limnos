@@ -1,4 +1,4 @@
-name: Run pytest
+name: Run pytest and mypy
 
 on:
     push:
@@ -42,5 +42,8 @@ jobs:
         - name: Run pytest
           run: |
             pipenv run pytest
+        - name: Run mypy
+          run: |
+            pipenv run mypy limnos
 
 
