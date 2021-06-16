@@ -5,6 +5,7 @@ Note that Routes contain Points of odd coordinates only, whereas
 Walls contain Points of even coordinates only
 """
 from typing import Union
+import json
 
 
 Point = tuple[int, int]
@@ -15,7 +16,47 @@ Walls = list[Wall]
 Maze = tuple[Route, Walls]
 
 
+TRAILS_SERIAL_VERSION = 1
+
+
 class Trails():
+
+    @classmethod
+    def deserialize(cls, ser: dict) -> 'Trails':
+        """
+        Deserialize a serialized Trails dictionary into a Trails object
+        """
+        assert ser['version'] == TRAILS_SERIAL_VERSION
+
+        trails = Trails(main=ser['main'], branches=[])
+
+        def _deserializer(ser: dict, trails: Trails) -> 'Trails':
+
+            for branch in ser['branches']:
+                new_trails = Trails(main=branch['main'], branches=[])
+                trails.branches.append(_deserializer(branch, new_trails))
+            return trails
+
+        return _deserializer(ser, trails)
+
+    @classmethod
+    def deserialize_from_string(cls, ser: str) -> 'Trails':
+        """
+        Deserialize a serialized Trails string into a Trails string
+        """
+
+        deser = json.loads(ser)
+        # the raw deserialization contains lists of lists of ints and not
+        # lists of tuples of ints, so we convert lists to tuples
+
+        def _lists_to_tuples(mydict):
+            mydict['main'] = [(p[0], p[1]) for p in mydict['main']]
+            for branch in mydict['branches']:
+                _lists_to_tuples(branch)
+
+        _lists_to_tuples(deser)
+
+        return cls.deserialize(deser)
 
     def __init__(self, main: Route, branches: list['Trails']):
 
@@ -63,6 +104,31 @@ class Trails():
             trails = self._get_subtrail_by_point(point, [])[0]
 
         return trails
+
+    def serialize(self) -> dict:
+        """
+        Return a nested dict of dicts of routes containing
+        this Trails object
+        """
+        output = dict()
+
+        def _serializer(trails: Trails, output: dict) -> dict:
+            output['main'] = trails.main
+            output['branches'] = [_serializer(branch, dict())
+                                  for branch in trails.branches]
+
+            return output
+
+        output['version'] = TRAILS_SERIAL_VERSION
+        output = _serializer(self, output)
+
+        return output
+
+    def serialize_to_string(self) -> str:
+        """
+        Return a string representing this Trails object
+        """
+        return json.dumps(self.serialize())
 
     def __getitem__(self, key: list[int]) -> 'Trails':
         if len(key) == 1:
